@@ -1,11 +1,18 @@
 <script>
     import MainContainer from '$lib/components/ChatWindow.svelte'
-    let numbers = $state([1, 2, 3, 4]);
-    let sum = $derived(numbers.reduce((a, b) => a + b, 0));
 
-    function addNumber() {
-        numbers[numbers.length] = numbers.length + 1;
+    let messages = [
+    {
+        id: 1,
+        role: "user",
+        content: "Hello"
+    },
+    {
+        id: 2,
+        role: "assistant",
+        content: "Hi! How can I help you?"
     }
+];
 </script>
 
 <MainContainer />

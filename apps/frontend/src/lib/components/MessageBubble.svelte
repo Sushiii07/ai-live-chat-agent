@@ -15,13 +15,14 @@
     }
 
     .user {
-        border: 3px #F1F5F9 solid;
+        /* border: 3px #F1F5F9 solid; */
         color: #F1F5F9;
         margin-left: auto;
+        background-color: #2B2F3A;
     }
     
     .assistant {
-        border: 3px #FFB703 solid;
+        /* border: 3px #FFB703 solid; */
         color: #F1F5F9;
         margin-right: auto;
     }
