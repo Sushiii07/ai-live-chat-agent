@@ -1,21 +1,43 @@
 <script lang="ts">
     import MessageList from "$lib/components/MessageList.svelte";
     import MessageInput from "$lib/components/InputBar.svelte";
+    import { getSessionId } from "$lib/session";
 
     type Message = {
         id: number;
-        role: 'user' | 'assistant';
+        role: 'user' | 'ai';
         content: string;
     };
     
     let messages = $state<Message[]>([]);
 
-    function sendMessage(content: string) {
+    async function sendMessage(content: string) {
         messages.push({
             id: Date.now(),
             role: 'user',
             content
         });
+        
+        try {
+            const response = await fetch('http://localhost:3000/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    content: content,
+                    sessionId: getSessionId()
+                })
+            })
+            if (!response.ok) {
+                throw new Error('Server rejected the request');
+            }
+
+            const data = await response.json()
+            if (data) {
+                messages.push(data);
+            }
+        } catch (error) {
+            console.error("Failed to send message", error);
+        }
     }
 </script>
 
