@@ -3,6 +3,7 @@
     import MessageInput from "$lib/components/InputBar.svelte";
     import { getSessionId } from "$lib/session";
 	import { onMount } from "svelte";
+    import { tick } from "svelte";
 
     type Message = {
         id: number;
@@ -11,6 +12,7 @@
     };
     
     let messages = $state<Message[]>([]);
+    let messageArea: HTMLDivElement | null = null;
 
     onMount(async () => {
         const session_id = getSessionId();
@@ -55,12 +57,28 @@
             console.error("Failed to send message", error);
         }
     }
+
+    $effect(() => {
+        messages.length;
+        scrollToBottom();
+    });
+
+    async function scrollToBottom() {
+        await tick();
+
+        if (!messageArea) return;
+
+        messageArea.scrollTo({
+            top: messageArea.scrollHeight,
+            behavior: "smooth"
+        });
+    }
 </script>
 
 <div class="wrapper">
     <div class="container">
         <h1>Chat Window</h1>
-        <div class="message-area">
+        <div class="message-area" bind:this={messageArea}>
             <MessageList {messages} />
         </div>
         <div class="input-area">
@@ -90,6 +108,7 @@
         overflow-y: auto;
         padding: 10px;
         scrollbar-gutter: stable;
+        min-height: 0;
 
         /* Firefox */
         scrollbar-width: thin;
