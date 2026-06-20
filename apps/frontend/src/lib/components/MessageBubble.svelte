@@ -9,9 +9,19 @@
 <style>
     .bubble {
         max-width: 70%;
+        max-height: 300px;
         padding: 12px;
         border-radius: 16px;
         margin-bottom: 8px;
+
+        white-space: pre-wrap;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        overflow-y: auto;
+        overflow-x: hidden;
+
+        scrollbar-width: thin;
+        scrollbar-color: rgba(150,150,150,0.5) transparent;
     }
 
     .user {

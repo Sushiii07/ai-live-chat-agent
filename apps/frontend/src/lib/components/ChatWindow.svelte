@@ -2,6 +2,7 @@
     import MessageList from "$lib/components/MessageList.svelte";
     import MessageInput from "$lib/components/InputBar.svelte";
     import { getSessionId } from "$lib/session";
+	import { onMount } from "svelte";
 
     type Message = {
         id: number;
@@ -10,6 +11,21 @@
     };
     
     let messages = $state<Message[]>([]);
+
+    onMount(async () => {
+        const session_id = getSessionId();
+        try {
+            const response = await fetch(`http://localhost:3000/api/chat/${session_id}`);
+            if (response.ok) {
+                const pastMessages = await response.json();
+                if (pastMessages.length > 0) {
+                    messages = pastMessages;
+                }
+            }
+        } catch (error) {
+            console.error("Failed to load chat history:", error);
+        }
+    });
 
     async function sendMessage(content: string) {
         messages.push({
@@ -44,8 +60,12 @@
 <div class="wrapper">
     <div class="container">
         <h1>Chat Window</h1>
-        <MessageList {messages} />
-        <MessageInput onSend={sendMessage} />
+        <div class="message-area">
+            <MessageList {messages} />
+        </div>
+        <div class="input-area">
+            <MessageInput onSend={sendMessage} />
+        </div>
     </div>
 </div>
 
@@ -59,9 +79,34 @@
     }
     .container {
         width: 60%;
-        border-radius: 26px;
+        height: calc(100vh - 20px);
         padding: 10px;
-        margin-top: 10px;
-        margin-bottom: 10px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .message-area {
+        flex: 1;
+        overflow-y: auto;
+        padding: 10px;
+        scrollbar-gutter: stable;
+
+        /* Firefox */
+        scrollbar-width: thin;
+        scrollbar-color: rgba(150,150,150,0.5) transparent;
+    }
+
+    .message-area::-webkit-scrollbar-thumb {
+        background: transparent;
+    }
+
+    .message-area:hover::-webkit-scrollbar-thumb {
+        background: rgba(150,150,150,0.5);
+    }
+
+    .input-area {
+        position: sticky;
+        bottom: 0;
+        padding-top: 10px;
     }
 </style>
